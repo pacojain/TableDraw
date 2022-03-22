@@ -35,7 +35,7 @@ $cushionWidth= Quantity[2.125, "Inches"];
 $ballDiameter= Quantity[2.25, "Inches"];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*iron dimensions*)
 
 
@@ -67,8 +67,10 @@ $ironColor=GrayLevel[0.745098];
 (*table decorations*)
 
 
+SetDirectory["C:/Users/pacoj/git/TableDraw/"];
 $headSpotGraphic= None;
-$diamondGraphic= Import["C:\\Users\\pacoj\\Desktop\\BillardImaging\\tableDraw\\ABALONE-OUT-MOP-IN-DIAMOND.jpg"]
+$diamondGraphic= Import["ABALONE-OUT-MOP-IN-DIAMOND.jpg"];
+$graphicsEdgeForm= EdgeForm[{Thin, Black}];
 
 
 (* ::Subsection:: *)
@@ -79,7 +81,7 @@ $diamondGraphic= Import["C:\\Users\\pacoj\\Desktop\\BillardImaging\\tableDraw\\A
 (*rail, bed, and shelf-cut graphics*)
 
 
-railGraphic= Graphics[{$railColor, 
+railGraphic= Graphics[{$graphicsEdgeForm,$railColor, 
 	Rectangle[
 		{-($railWidth+$cushionWidth)/$inchesPerDiamond, -($railWidth+$cushionWidth)/$inchesPerDiamond},{8+($railWidth+$cushionWidth)/$inchesPerDiamond, 4+($railWidth+$cushionWidth)/$inchesPerDiamond},
 		RoundingRadius -> $railRoundingRadius/$inchesPerDiamond]
@@ -161,7 +163,7 @@ cushionPoly6= Polygon[{
 }];
 
 
-cushionGraphic= Graphics[{$cushionColor, 
+cushionGraphic= Graphics[{$graphicsEdgeForm, $cushionColor, 
 	cushionPoly1, cushionPoly2, cushionPoly3, cushionPoly4, cushionPoly5, cushionPoly6
 }];
 
@@ -174,7 +176,7 @@ cpFull= CirclePoints[$cornerIronHoleBackset/$inchesPerDiamond{-1,-1}, {$ironDiam
 cp= Select[cpFull, #[[1]]<-$cushionWidth/$inchesPerDiamond || #[[2]]<-$cushionWidth/$inchesPerDiamond&];
 
 
-ironBGraphic=Graphics[{EdgeForm[Black], $ironColor, 
+ironBGraphic=Graphics[{EdgeForm[{Thin, Black}], $ironColor, 
   FilledCurve[{Line[{
 		$cushionWidth/($inchesPerDiamond){1, 1}+ $ironDiameter/(2 Sqrt[2] $inchesPerDiamond){-1,1}+$ironCornerLip/$inchesPerDiamond{0,1}+{-$ironRailWidth/$inchesPerDiamond,0}, (* x corner *)
 		$cushionWidth/$inchesPerDiamond{-1,1}+$ironDiameter/(2 Sqrt[2] $inchesPerDiamond){0,1}+$ironCornerLip/$inchesPerDiamond{0,1},
