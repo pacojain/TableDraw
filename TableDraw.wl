@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*global variables*)
 
 
@@ -111,7 +111,7 @@ holeGraphic= Graphics[{$holeColor,
 }];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*cushion graphics*)
 
 
@@ -168,26 +168,14 @@ cushionGraphic= Graphics[{$graphicsEdgeForm, $cushionColor,
 }];
 
 
-(* ::Subsubsection:: *)
-(*iron graphics (curve-based)*)
+(* ::Subsubsection::Closed:: *)
+(*corner iron graphics*)
 
 
 cpFull= CirclePoints[$cornerIronHoleBackset/$inchesPerDiamond{-1,-1}, {$ironDiameter /(2 $inchesPerDiamond), Pi/2}, $ironCirclePointCount];
 cp= Select[cpFull, #[[1]]<-$cushionWidth/$inchesPerDiamond || #[[2]]<-$cushionWidth/$inchesPerDiamond&];
-(*cp= Select[
-	cp
-	, 
-	Or[
-		#[[1]] > #[[2]] (cushionPoly2[[1,4,2]]-cushionPoly2[[1,1,2]])/(cushionPoly2[[1,4,1]]-cushionPoly2[[1,1,1]])+cushionPoly2[[1,4,2]],
-		#[[1]] < 0 && #[[2]] < 0
-		(*#\[LeftDoubleBracket]1\[RightDoubleBracket] < #\[LeftDoubleBracket]2\[RightDoubleBracket] (cushionPoly1\[LeftDoubleBracket]1,2,2\[RightDoubleBracket]-cushionPoly1\[LeftDoubleBracket]1,1,2\[RightDoubleBracket])/(cushionPoly1\[LeftDoubleBracket]1,2,1\[RightDoubleBracket]-cushionPoly1\[LeftDoubleBracket]1,1,1\[RightDoubleBracket])+cushionPoly1\[LeftDoubleBracket]1,2,1\[RightDoubleBracket] && #\[LeftDoubleBracket]1\[RightDoubleBracket] > #\[LeftDoubleBracket]2\[RightDoubleBracket]*)
-	]&
-];*)
 cp= Select[cp, #[[1]] < 0 && #[[2]] < 0 &];
-
-
-ironBGraphic=Graphics[{EdgeForm[{Thin, Black}], $ironColor, 
-  FilledCurve[{Line[{
+cornerIronFilledCurve=FilledCurve[{Line[{
 		$cushionWidth/($inchesPerDiamond){1, 1}+ $ironDiameter/(2 Sqrt[2] $inchesPerDiamond){-1,1}+$ironCornerLip/$inchesPerDiamond{0,1}+{-$ironRailWidth/$inchesPerDiamond,0}, (* x corner *)
 		$cushionWidth/$inchesPerDiamond{-1,1}+$ironDiameter/(2 Sqrt[2] $inchesPerDiamond){0,1}+$ironCornerLip/$inchesPerDiamond{0,1},
 		{-$cushionWidth/$inchesPerDiamond, $cornerJawWidth/(Sqrt[2]$inchesPerDiamond)-(Tan[$cornerJawAngle-Quantity[90.,"AngularDegrees"]])$cushionWidth/$inchesPerDiamond},
@@ -197,7 +185,29 @@ ironBGraphic=Graphics[{EdgeForm[{Thin, Black}], $ironColor,
 		$cushionWidth/($inchesPerDiamond){1, 0}+$ironDiameter/(2 Sqrt[2] $inchesPerDiamond){1,0}+$ironCornerLip/$inchesPerDiamond{1,0}+{0,-$ironRailWidth/$inchesPerDiamond}, (* y corner *)
 		$ironRailWidth/$inchesPerDiamond{-1,-1},                                  (* x-y corner *)                                                                                                 (* x-y corner *)
 		$cushionWidth/($inchesPerDiamond){0, 1}+ $ironDiameter/(2 Sqrt[2] $inchesPerDiamond){0,1}+$ironCornerLip/$inchesPerDiamond{0,1}+{-$ironRailWidth/$inchesPerDiamond, 0} (* x corner *)
-	}]}]}];
+	}]}];
+
+
+ironBGraphic=Graphics[{$graphicsEdgeForm, $ironColor, 
+  cornerIronFilledCurve}];
+
+
+ironEGraphic= Graphics[{$graphicsEdgeForm, $ironColor, 
+	Rotate[cornerIronFilledCurve, 180 Degree, {4,2}]
+}];
+
+
+ironCGraphic= Graphics[{$graphicsEdgeForm, $ironColor, 
+	GeometricTransformation[cornerIronFilledCurve, ReflectionTransform[{0,1}, {0,2}]]
+}];
+
+
+ironFGraphic= Graphics[{$graphicsEdgeForm, $ironColor, 
+	GeometricTransformation[cornerIronFilledCurve, ReflectionTransform[{1,0}, {4,0}]]
+}];
+
+
+cornerIronGraphics= {ironBGraphic, ironCGraphic, ironEGraphic, ironFGraphic};
 
 
 (* ::Subsubsection::Closed:: *)
@@ -218,4 +228,4 @@ ballGraphics= Graphics/@{
 coordinateGraphic= Graphics[{Pink, FaceForm[Transparent], EdgeForm[Dashed], Rectangle[{0,0},{8,4}]}];
 
 
-Show[railGraphic, bedGraphic, holeGraphic, cushionGraphic, ballGraphics, ironBGraphic]
+Show[railGraphic, bedGraphic, holeGraphic, cushionGraphic, ballGraphics, cornerIronGraphics]
