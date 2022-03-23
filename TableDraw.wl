@@ -111,7 +111,7 @@ holeGraphic= Graphics[{$holeColor,
 }];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*cushion graphics*)
 
 
@@ -174,6 +174,16 @@ cushionGraphic= Graphics[{$graphicsEdgeForm, $cushionColor,
 
 cpFull= CirclePoints[$cornerIronHoleBackset/$inchesPerDiamond{-1,-1}, {$ironDiameter /(2 $inchesPerDiamond), Pi/2}, $ironCirclePointCount];
 cp= Select[cpFull, #[[1]]<-$cushionWidth/$inchesPerDiamond || #[[2]]<-$cushionWidth/$inchesPerDiamond&];
+(*cp= Select[
+	cp
+	, 
+	Or[
+		#[[1]] > #[[2]] (cushionPoly2[[1,4,2]]-cushionPoly2[[1,1,2]])/(cushionPoly2[[1,4,1]]-cushionPoly2[[1,1,1]])+cushionPoly2[[1,4,2]],
+		#[[1]] < 0 && #[[2]] < 0
+		(*#\[LeftDoubleBracket]1\[RightDoubleBracket] < #\[LeftDoubleBracket]2\[RightDoubleBracket] (cushionPoly1\[LeftDoubleBracket]1,2,2\[RightDoubleBracket]-cushionPoly1\[LeftDoubleBracket]1,1,2\[RightDoubleBracket])/(cushionPoly1\[LeftDoubleBracket]1,2,1\[RightDoubleBracket]-cushionPoly1\[LeftDoubleBracket]1,1,1\[RightDoubleBracket])+cushionPoly1\[LeftDoubleBracket]1,2,1\[RightDoubleBracket] && #\[LeftDoubleBracket]1\[RightDoubleBracket] > #\[LeftDoubleBracket]2\[RightDoubleBracket]*)
+	]&
+];*)
+cp= Select[cp, #[[1]] < 0 && #[[2]] < 0 &];
 
 
 ironBGraphic=Graphics[{EdgeForm[{Thin, Black}], $ironColor, 
