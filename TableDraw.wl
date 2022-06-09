@@ -34,7 +34,7 @@ $railRoundingRadius= Quantity[1., "Inches"];
 $cushionWidth= Quantity[2.125, "Inches"];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*iron dimensions*)
 
 
@@ -209,7 +209,7 @@ cornerIronFilledCurve=FilledCurve[{Line[{
 
 
 ironBGraphic=Graphics[{$graphicsEdgeForm, $ironColor, 
-  cornerIronFilledCurve}];
+  cornerIronFilledCurve}]
 
 
 ironEGraphic= Graphics[{$graphicsEdgeForm, $ironColor, 
@@ -230,28 +230,46 @@ ironFGraphic= Graphics[{$graphicsEdgeForm, $ironColor,
 cornerIronGraphics= {ironBGraphic, ironCGraphic, ironEGraphic, ironFGraphic};
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*side iron graphics*)
 
 
 cpFull= CirclePoints[{4,-$sideIronHoleBackset/$inchesPerDiamond}, {$ironDiameter /(2 $inchesPerDiamond), Pi/2}, $ironCirclePointCount];
 cp= Select[cpFull, #[[2]]<-$cushionWidth/$inchesPerDiamond&];
+
+
+cp2Full= CirclePoints[
+	{4 - ($sideIronPocketLip-$sideIronRoundingRadius)/($inchesPerDiamond), -($ironRailWidth-$sideIronRoundingRadius)/$inchesPerDiamond}, 
+	{$sideIronRoundingRadius/$inchesPerDiamond, Pi}, $sideIronRoundingCirclePointCount
+];
+cp2=Reverse[cp2Full[[1;; Quotient[$sideIronRoundingCirclePointCount,4]]]];
+
+
+cp3Full= CirclePoints[
+	{4 + ($sideIronPocketLip-$sideIronRoundingRadius)/($inchesPerDiamond), -($ironRailWidth-$sideIronRoundingRadius)/$inchesPerDiamond}, 
+	{$sideIronRoundingRadius/$inchesPerDiamond, 3Pi/2}, $sideIronRoundingCirclePointCount
+];
+cp3=Reverse[cp3Full[[1;; Quotient[$sideIronRoundingCirclePointCount,4]]]];
+
+
 sideIronFilledCurve=FilledCurve[{Line[{
-		{4 - $sideIronPocketLip/($inchesPerDiamond), -$ironRailWidth/$inchesPerDiamond},
+		Sequence@@cp2,
+		{4 - $sideIronPocketLip/($inchesPerDiamond), -($ironRailWidth-$sideIronRoundingRadius)/$inchesPerDiamond},
 		{4 - $sideIronPocketLip/($inchesPerDiamond), -$cushionWidth/$inchesPerDiamond},
 		Sequence@@cp,
 		{4 + $sideIronPocketLip/($inchesPerDiamond), -$cushionWidth/$inchesPerDiamond},
-		{4 + $sideIronPocketLip/($inchesPerDiamond), -$ironRailWidth/$inchesPerDiamond}
+		{4 + $sideIronPocketLip/($inchesPerDiamond), -($ironRailWidth-$sideIronRoundingRadius)/$inchesPerDiamond},
+		Sequence@@cp3
 	}]}];
 
 
 ironAGraphic=Graphics[{$graphicsEdgeForm, $ironColor, 
-  sideIronFilledCurve}];
+  sideIronFilledCurve}]
 
 
 ironDGraphic=Graphics[{$graphicsEdgeForm, $ironColor, 
   GeometricTransformation[sideIronFilledCurve, ReflectionTransform[{0,1}, {4,2}]]
-}]
+}];
 
 
 sideIronGraphics={ironAGraphic, ironDGraphic};
