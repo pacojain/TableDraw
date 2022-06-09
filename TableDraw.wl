@@ -34,7 +34,7 @@ $railRoundingRadius= Quantity[1., "Inches"];
 $cushionWidth= Quantity[2.125, "Inches"];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*iron dimensions*)
 
 
@@ -49,11 +49,14 @@ $ironDiameter= Quantity[4.2, "Inches"];
 $cornerIronHoleBackset= Quantity[2, "Inches"];
 $cornerIronPocketLip= Quantity[1, "Inches"];
 $cornerIronRoundingRadius= Quantity[1, "Inches"];
+$cornerIronRoundingCirclePointCount= $ironCirclePointCount;
 
 
 (* side iron measurements *)
 $sideIronHoleBackset= Quantity[2, "Inches"];
 $sideIronPocketLip= Quantity[6, "Inches"];
+$sideIronRoundingRadius= Quantity[1, "Inches"];
+$sideIronRoundingCirclePointCount= $ironCirclePointCount;
 
 
 (* ::Subsubsection::Closed:: *)
@@ -186,6 +189,12 @@ cushionGraphic= Graphics[{$graphicsEdgeForm, $cushionColor,
 cpFull= CirclePoints[$cornerIronHoleBackset/$inchesPerDiamond{-1,-1}, {$ironDiameter /(2 $inchesPerDiamond), Pi/2}, $ironCirclePointCount];
 cp= Select[cpFull, #[[1]]<-$cushionWidth/$inchesPerDiamond || #[[2]]<-$cushionWidth/$inchesPerDiamond&];
 cp= Select[cp, #[[1]] < 0 && #[[2]] < 0 &];
+
+
+cp2Full= CirclePoints[($ironRailWidth-$cornerIronRoundingRadius)/$inchesPerDiamond{-1,-1}, {$cornerIronRoundingRadius/$inchesPerDiamond, Pi}, $cornerIronRoundingCirclePointCount];
+cp2= Reverse[cp2Full[[1;; Quotient[$cornerIronRoundingCirclePointCount,4]]]];
+
+
 cornerIronFilledCurve=FilledCurve[{Line[{
 		$cushionWidth/($inchesPerDiamond){1, 1}+ $ironDiameter/(2 Sqrt[2] $inchesPerDiamond){-1,1}+$cornerIronPocketLip/$inchesPerDiamond{0,1}+{-$ironRailWidth/$inchesPerDiamond,0}, (* x corner *)
 		$cushionWidth/$inchesPerDiamond{-1,1}+$ironDiameter/(2 Sqrt[2] $inchesPerDiamond){0,1}+$cornerIronPocketLip/$inchesPerDiamond{0,1},
@@ -194,7 +203,7 @@ cornerIronFilledCurve=FilledCurve[{Line[{
 		{($cornerJawWidth/Sqrt[2]-Tan[$cornerJawAngle-Quantity[90.,"AngularDegrees"]]$cushionWidth)/$inchesPerDiamond, -$cushionWidth/$inchesPerDiamond},
 		$cushionWidth/($inchesPerDiamond){1, -1}+$ironDiameter/(2 Sqrt[2] $inchesPerDiamond){1,0}+$cornerIronPocketLip/$inchesPerDiamond{1,0},
 		$cushionWidth/($inchesPerDiamond){1, 0}+$ironDiameter/(2 Sqrt[2] $inchesPerDiamond){1,0}+$cornerIronPocketLip/$inchesPerDiamond{1,0}+{0,-$ironRailWidth/$inchesPerDiamond}, (* y corner *)
-		$ironRailWidth/$inchesPerDiamond{-1,-1},                                  (* x-y corner *)                                                                                                 (* x-y corner *)
+		Sequence@@cp2,                                  (* x-y corner *)                                                                                                 (* x-y corner *)
 		$cushionWidth/($inchesPerDiamond){0, 1}+ $ironDiameter/(2 Sqrt[2] $inchesPerDiamond){0,1}+$cornerIronPocketLip/$inchesPerDiamond{0,1}+{-$ironRailWidth/$inchesPerDiamond, 0} (* x corner *)
 	}]}];
 
@@ -221,7 +230,7 @@ ironFGraphic= Graphics[{$graphicsEdgeForm, $ironColor,
 cornerIronGraphics= {ironBGraphic, ironCGraphic, ironEGraphic, ironFGraphic};
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*side iron graphics*)
 
 
