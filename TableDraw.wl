@@ -1,6 +1,10 @@
 (* ::Package:: *)
 
-(* ::Subsection:: *)
+(* ::Section:: *)
+(*table graphics*)
+
+
+(* ::Subsection::Closed:: *)
 (*global variables*)
 
 
@@ -71,13 +75,6 @@ $ironColor=GrayLevel[0.745098];
 
 
 (* ::Subsubsection::Closed:: *)
-(*ball colors and dimensions*)
-
-
-$ballDiameter= Quantity[2.25, "Inches"]
-
-
-(* ::Subsubsection::Closed:: *)
 (*table decorations*)
 
 
@@ -88,7 +85,7 @@ $diamondStyle= Sequence[PointSize[Medium], RGBColor[0.67451, 0.337255, 0]];
 $graphicsEdgeForm= EdgeForm[{Thin, Black}];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*define main Graphics items*)
 
 
@@ -299,22 +296,41 @@ ironDGraphic=Graphics[{$graphicsEdgeForm, $ironColor,
 sideIronGraphics={ironAGraphic, ironDGraphic};
 
 
-(* ::Subsubsection::Closed:: *)
-(*ball graphics*)
-
-
-ballGraphics= Graphics/@{
-	{Red, Disk[{0.15, 3.85}, $ballDiameter/(2$inchesPerDiamond)]},
-	{Yellow, Disk[{3.85, 0.15}, $ballDiameter/(2$inchesPerDiamond)]},
-	{Blue, Disk[{3.85+2$ballDiameter/$inchesPerDiamond, 0.15}, $ballDiameter/(2$inchesPerDiamond)]}
-};
-
-
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*show table*)
 
 
-coordinateGraphic= Graphics[{Pink, FaceForm[Transparent], EdgeForm[Dashed], Rectangle[{0,0},{8,4}]}];
+tableGraphics= {railGraphic, bedGraphic, holeGraphic, cushionGraphic, cornerIronGraphics, sideIronGraphics, diamondGraphics};
+Show[tableGraphics]
 
 
-Show[railGraphic, bedGraphic, holeGraphic, cushionGraphic, ballGraphics, cornerIronGraphics, sideIronGraphics, diamondGraphics]
+(* ::Section:: *)
+(*ball graphics*)
+
+
+(* ::Subsubsection:: *)
+(*ball colors and dimensions*)
+
+
+$ballDiameter= Quantity[2.25, "Inches"]
+$ballColorList= {White, Yellow, Blue, Red, Purple, Orange, Green, Brown, Black};
+
+
+(* ::Subsubsection:: *)
+(*ball graphics*)
+
+
+ballGraphics= Graphics[{#, Disk[{0, 0}, $ballDiameter/(2$inchesPerDiamond)]}, ImageSize->20]& /@ $ballColorList
+
+
+ballGraphics= Graphics3D[{#, Sphere[{0, 0, 0}, $ballDiameter/(2$inchesPerDiamond)]}, ImageSize->20, Boxed->False]& /@ $ballColorList
+
+
+(* ::Section:: *)
+(*moving balls with Locators*)
+
+
+?LocatorPane
+
+
+LocatorPane[{4,2}, Show[tableGraphics], Appearance -> Rasterize[ballGraphics[[1]], Background->None]]
