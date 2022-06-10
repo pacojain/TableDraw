@@ -48,7 +48,7 @@ $ironDiameter= Quantity[4.2, "Inches"];
 (* corner iron measurements *)
 $cornerIronHoleBackset= Quantity[2, "Inches"];
 $cornerIronPocketLip= Quantity[1, "Inches"];
-$cornerIronRoundingRadius= Quantity[1, "Inches"];
+$cornerIronRoundingRadius= Quantity[4, "Inches"];
 $cornerIronRoundingCirclePointCount= $ironCirclePointCount;
 
 
@@ -81,9 +81,10 @@ $ballDiameter= Quantity[2.25, "Inches"]
 (*table decorations*)
 
 
-SetDirectory["C:/Users/pacoj/git/TableDraw/"];
+SetDirectory[NotebookDirectory[]];
 $headSpotGraphic= None;
 $diamondGraphic= Import["ABALONE-OUT-MOP-IN-DIAMOND.jpg"];
+$diamondStyle= Sequence[PointSize[Medium], RGBColor[0.67451, 0.337255, 0]];
 $graphicsEdgeForm= EdgeForm[{Thin, Black}];
 
 
@@ -180,6 +181,29 @@ cushionPoly6= Polygon[{
 cushionGraphic= Graphics[{$graphicsEdgeForm, $cushionColor, 
 	cushionPoly1, cushionPoly2, cushionPoly3, cushionPoly4, cushionPoly5, cushionPoly6
 }];
+
+
+(* ::Subsubsection::Closed:: *)
+(*diamond graphics*)
+
+
+$diamondOffset= ($cushionWidth + $railWidth/2)/$inchesPerDiamond;
+diamondGraphics=Graphics[{$diamondStyle,
+	(* left rail *)
+	Point[{1, -$diamondOffset}], Point[{2, -$diamondOffset}],
+	Point[{3, -$diamondOffset}], Point[{5, -$diamondOffset}],
+	Point[{6, -$diamondOffset}], Point[{7, -$diamondOffset}],
+	(* right rail *)
+	Point[{1, 4+$diamondOffset}], Point[{2, 4+$diamondOffset}],
+	Point[{3, 4+$diamondOffset}], Point[{5, 4+$diamondOffset}],
+	Point[{6, 4+$diamondOffset}], Point[{7, 4+$diamondOffset}],
+	(* head rail *)
+	Point[{-$diamondOffset, 1}], Point[{-$diamondOffset, 2}],
+	Point[{-$diamondOffset, 3}],
+	(* foot rail *)
+	Point[{8+$diamondOffset, 1}], Point[{8+$diamondOffset, 2}],
+	Point[{8+$diamondOffset, 3}]
+	}];
 
 
 (* ::Subsubsection::Closed:: *)
@@ -293,4 +317,4 @@ ballGraphics= Graphics/@{
 coordinateGraphic= Graphics[{Pink, FaceForm[Transparent], EdgeForm[Dashed], Rectangle[{0,0},{8,4}]}];
 
 
-Show[railGraphic, bedGraphic, holeGraphic, cushionGraphic, ballGraphics, cornerIronGraphics, sideIronGraphics]
+Show[railGraphic, bedGraphic, holeGraphic, cushionGraphic, ballGraphics, cornerIronGraphics, sideIronGraphics, diamondGraphics]
