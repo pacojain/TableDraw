@@ -1,7 +1,7 @@
 (* ::Package:: *)
 
-(* ::Section:: *)
-(*table graphics*)
+(* ::Section::Closed:: *)
+(*pool table graphics*)
 
 
 (* ::Subsection::Closed:: *)
@@ -80,7 +80,6 @@ $ironColor=GrayLevel[0.745098];
 
 SetDirectory[NotebookDirectory[]];
 $headSpotGraphic= None;
-$diamondGraphic= Import["ABALONE-OUT-MOP-IN-DIAMOND.jpg"];
 $diamondStyle= Sequence[PointSize[Medium], RGBColor[0.67451, 0.337255, 0]];
 $graphicsEdgeForm= EdgeForm[{Thin, Black}];
 
@@ -101,16 +100,6 @@ railGraphic= Graphics[{$graphicsEdgeForm,$railColor,
 
 
 bedGraphic= Graphics[{$bedColor, Rectangle[{-$cushionWidth,-$cushionWidth}/$inchesPerDiamond,{8+$cushionWidth/$inchesPerDiamond,4+$cushionWidth/$inchesPerDiamond}]}];
-
-
-holeGraphic= Graphics[{$holeColor, 
-	Disk[{4,0} + $sideShelfBackset/$inchesPerDiamond{0, -1}, $sideShelfDiameter/(2$inchesPerDiamond)],       (* pocket A *)
-	Disk[{0,0} + $cornerShelfBackset/$inchesPerDiamond{-1, -1}, $cornerShelfDiameter/(2$inchesPerDiamond)],  (* pocket B *)
-	Disk[{0,4} + $cornerShelfBackset/$inchesPerDiamond{-1, 1}, $cornerShelfDiameter/(2$inchesPerDiamond)],   (* pocket C *)
-	Disk[{4,4} + $sideShelfBackset/$inchesPerDiamond{0, 1}, $sideShelfDiameter/(2$inchesPerDiamond)],        (* pocket D *)
-	Disk[{8,4} + $cornerShelfBackset/$inchesPerDiamond{1, 1}, $cornerShelfDiameter/(2$inchesPerDiamond)],    (* pocket E *)
-	Disk[{8,0} + $cornerShelfBackset/$inchesPerDiamond{1, -1}, $cornerShelfDiameter/(2$inchesPerDiamond)]    (* pocket F *)
-}];
 
 
 holeGraphic= Graphics[{$holeColor, 
@@ -300,15 +289,154 @@ sideIronGraphics={ironAGraphic, ironDGraphic};
 (*show table*)
 
 
-tableGraphics= {railGraphic, bedGraphic, holeGraphic, cushionGraphic, cornerIronGraphics, sideIronGraphics, diamondGraphics};
-Show[tableGraphics]
+poolTableGraphics= {railGraphic, bedGraphic, holeGraphic, cushionGraphic, cornerIronGraphics, sideIronGraphics, diamondGraphics};
+Show[poolTableGraphics]
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
+(*billiard table graphics*)
+
+
+(* ::Subsection::Closed:: *)
+(*global variables*)
+
+
+(* ::Subsubsection::Closed:: *)
+(*table dimensions*)
+
+
+(* overall dimensions *)
+$tableOrientation= Horizontal;
+$tableSize= Quantity[100., "Inches"];
+$inchesPerDiamond= $tableSize/8;
+
+
+(* rail, cushion, and ball dimensions*)
+$railWidth= Quantity[5., "Inches"];
+$railRoundingRadius= Quantity[1., "Inches"];
+$cushionWidth= Quantity[2.125, "Inches"];
+
+
+(* ::Subsubsection::Closed:: *)
+(*table colors*)
+
+
+$bedColor= RGBColor[0.141176, 0.701961, 0.47451];
+$cushionColor= Darker[$bedColor, 0.15];
+$railColor= RGBColor[0.768627, 0.513725, 0.133333];
+
+
+(* ::Subsubsection::Closed:: *)
+(*table decorations*)
+
+
+SetDirectory[NotebookDirectory[]];
+$headSpotGraphic= None;
+$diamondStyle= Sequence[PointSize[Medium], RGBColor[0.67451, 0.337255, 0]];
+$graphicsEdgeForm= EdgeForm[{Thin, Black}];
+
+
+(* ::Subsection::Closed:: *)
+(*define main Graphics items*)
+
+
+(* ::Subsubsection::Closed:: *)
+(*rail and bed*)
+
+
+railGraphic= Graphics[{$graphicsEdgeForm,$railColor, 
+	Rectangle[
+		{-($railWidth+$cushionWidth)/$inchesPerDiamond, -($railWidth+$cushionWidth)/$inchesPerDiamond},{8+($railWidth+$cushionWidth)/$inchesPerDiamond, 4+($railWidth+$cushionWidth)/$inchesPerDiamond},
+		RoundingRadius -> $railRoundingRadius/$inchesPerDiamond]
+	}];
+
+
+bedGraphic= Graphics[{$bedColor, Rectangle[{-$cushionWidth,-$cushionWidth}/$inchesPerDiamond,{8+$cushionWidth/$inchesPerDiamond,4+$cushionWidth/$inchesPerDiamond}]}];
+
+
+(* ::Subsubsection::Closed:: *)
+(*cushion graphics*)
+
+
+cushionPoly1= Polygon[{
+	{(-Tan[Quantity[45.,"AngularDegrees"]]$cushionWidth)/$inchesPerDiamond, -$cushionWidth/$inchesPerDiamond},
+	{0, 0},
+	{8, 0},
+	{8+Tan[Quantity[45.,"AngularDegrees"]]$cushionWidth/$inchesPerDiamond, -$cushionWidth/$inchesPerDiamond}
+}];
+
+
+cushionPoly2= Polygon[{
+	{(-Tan[Quantity[45.,"AngularDegrees"]]$cushionWidth)/$inchesPerDiamond, -$cushionWidth/$inchesPerDiamond},
+	{-Tan[Quantity[45.,"AngularDegrees"]]$cushionWidth/$inchesPerDiamond, 4+Tan[Quantity[45.,"AngularDegrees"]]$cushionWidth/$inchesPerDiamond},
+	{0, 4},
+	{0, 0}
+}];
+
+
+cushionPoly3= Polygon[{
+	{0, 4},
+	{-Tan[Quantity[45.,"AngularDegrees"]]$cushionWidth/$inchesPerDiamond, 4+Tan[Quantity[45.,"AngularDegrees"]]$cushionWidth/$inchesPerDiamond},
+	{8+Tan[Quantity[45.,"AngularDegrees"]]$cushionWidth/$inchesPerDiamond, 4+Tan[Quantity[45.,"AngularDegrees"]]$cushionWidth/$inchesPerDiamond},
+	{8,4}
+}];
+
+
+cushionPoly4= Polygon[{
+	{8, 0},
+	{8, 4},
+	{8+Tan[Quantity[45.,"AngularDegrees"]]$cushionWidth/$inchesPerDiamond, 4+Tan[Quantity[45.,"AngularDegrees"]]$cushionWidth/$inchesPerDiamond},
+	{8+Tan[Quantity[45.,"AngularDegrees"]]$cushionWidth/$inchesPerDiamond, -Tan[Quantity[45.,"AngularDegrees"]]$cushionWidth/$inchesPerDiamond}
+}];
+
+
+cushionGraphic= Graphics[{$graphicsEdgeForm, $cushionColor, 
+	cushionPoly1, cushionPoly2, cushionPoly3, cushionPoly4
+}];
+
+
+(* ::Subsubsection::Closed:: *)
+(*diamond graphics*)
+
+
+$diamondOffset= ($cushionWidth + $railWidth/2)/$inchesPerDiamond;
+diamondGraphics=Graphics[{$diamondStyle,
+	(* left rail *)
+	Point[{0, -$diamondOffset}], Point[{1, -$diamondOffset}],
+	Point[{2, -$diamondOffset}], Point[{3, -$diamondOffset}],
+	Point[{4, -$diamondOffset}], Point[{5, -$diamondOffset}],
+	Point[{6, -$diamondOffset}], Point[{7, -$diamondOffset}],
+	Point[{8, -$diamondOffset}],
+	(* right rail *)
+	Point[{0, 4+$diamondOffset}], Point[{1, 4+$diamondOffset}], 
+	Point[{2, 4+$diamondOffset}], Point[{3, 4+$diamondOffset}], 
+	Point[{4, 4+$diamondOffset}], Point[{5, 4+$diamondOffset}],
+	Point[{6, 4+$diamondOffset}], Point[{7, 4+$diamondOffset}],
+	Point[{8, 4+$diamondOffset}],
+	(* head rail *)
+	Point[{-$diamondOffset, 0}], Point[{-$diamondOffset, 1}], 
+	Point[{-$diamondOffset, 2}], Point[{-$diamondOffset, 3}], 
+	Point[{-$diamondOffset, 4}],
+	(* foot rail *)
+	Point[{8+$diamondOffset, 0}], Point[{8+$diamondOffset, 1}], 
+	Point[{8+$diamondOffset, 2}], Point[{8+$diamondOffset, 3}],
+	Point[{8+$diamondOffset, 4}]
+	}];
+
+
+(* ::Subsection:: *)
+(*show table*)
+
+
+billiardTableGraphics= {railGraphic, bedGraphic, cushionGraphic,diamondGraphics};
+Show[billiardTableGraphics]
+
+
+(* ::Section::Closed:: *)
 (*ball graphics*)
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*ball colors and dimensions*)
 
 
@@ -316,7 +444,7 @@ $ballDiameter= Quantity[2.25, "Inches"]
 $ballColorList= {White, Yellow, Blue, Red, Purple, Orange, Green, Brown, Black};
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*ball graphics*)
 
 
@@ -326,11 +454,15 @@ ballGraphics= Graphics[{#, Disk[{0, 0}, $ballDiameter/(2$inchesPerDiamond)]}, Im
 ballGraphics= Graphics3D[{#, Sphere[{0, 0, 0}, $ballDiameter/(2$inchesPerDiamond)]}, ImageSize->20, Boxed->False]& /@ $ballColorList
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*moving balls with Locators*)
 
 
 ?LocatorPane
 
 
-LocatorPane[{4,2}, Show[tableGraphics], Appearance -> Rasterize[ballGraphics[[1]], Background->None]]
+(* at tableGraphics ImageSize of 400, one diamond is ImageSize -> 42 across *)
+(* therefore ball ImageSize should be 42/($tableSize/(8 $ballDiameter)) = 7.56` for 100inch table and standard balls *)
+
+
+LocatorPane[{4,2}, Show[tableGraphics, ImageSize->400], Appearance -> Rasterize[ballGraphics[[1]], Background->None,ImageSize-> 8]]
