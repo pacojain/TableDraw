@@ -293,7 +293,7 @@ poolTableGraphics= {railGraphic, bedGraphic, holeGraphic, cushionGraphic, corner
 Show[poolTableGraphics]
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*billiard table graphics*)
 
 
@@ -432,7 +432,7 @@ billiardTableGraphics= {railGraphic, bedGraphic, cushionGraphic,diamondGraphics}
 Show[billiardTableGraphics]
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*ball graphics*)
 
 
@@ -440,29 +440,40 @@ Show[billiardTableGraphics]
 (*ball colors and dimensions*)
 
 
-$ballDiameter= Quantity[2.25, "Inches"]
-$ballColorList= {White, Yellow, Blue, Red, Purple, Orange, Green, Brown, Black};
+$ballDiameter= Quantity[2.25, "Inches"];
+$ballColorList= {Yellow, Blue, Red, Purple, Orange, Green, Brown, Black};
+
+
+ClearAll[ballColor]
+ballColor[0]:= White
+ballColor[n_Integer]:= $ballColorList[[Mod[n, Length[$ballColorList], 1]]]
 
 
 (* ::Subsubsection::Closed:: *)
 (*ball graphics*)
 
 
-ballGraphics= Graphics[{#, Disk[{0, 0}, $ballDiameter/(2$inchesPerDiamond)]}, ImageSize->20]& /@ $ballColorList
+ClearAll[ballGraphicsFlat]
+ballGraphicsFlat[n_Integer]:= ballGraphicsFlat[ballColor[n]]
+ballGraphicsFlat[color: (_RGBColor|_GrayLevel)]:= Graphics[
+ {color, Disk[{0, 0}, $ballDiameter/(2$inchesPerDiamond)]}, ImageSize->20
+]
+ballGraphicsFlat/@Range[0,8]
 
 
-ballGraphics= Graphics3D[{#, Sphere[{0, 0, 0}, $ballDiameter/(2$inchesPerDiamond)]}, ImageSize->20, Boxed->False]& /@ $ballColorList
+ClearAll[ballGraphics3D]
+ballGraphics3D[n_Integer]:= ballGraphics3D[ballColor[n]]
+ballGraphics3D[color: (_RGBColor|_GrayLevel)]:= Graphics3D[
+{color, Sphere[{0, 0, 0}, $ballDiameter/(2$inchesPerDiamond)]}, ImageSize->20, Boxed->False]
+ballGraphics3D/@Range[0,8]
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*moving balls with Locators*)
-
-
-?LocatorPane
 
 
 (* at tableGraphics ImageSize of 400, one diamond is ImageSize -> 42 across *)
 (* therefore ball ImageSize should be 42/($tableSize/(8 $ballDiameter)) = 7.56` for 100inch table and standard balls *)
 
 
-LocatorPane[{4,2}, Show[tableGraphics, ImageSize->400], Appearance -> Rasterize[ballGraphics[[1]], Background->None,ImageSize-> 8]]
+LocatorPane[{4,2}, Show[billiardTableGraphics, ImageSize->400], Appearance -> Rasterize[ballGraphics[[1]], Background->None,ImageSize-> 8]]
