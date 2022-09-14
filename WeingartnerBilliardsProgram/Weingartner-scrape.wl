@@ -95,10 +95,10 @@ shotSource["03"]= URLFetch["http://wbpb.blogspot.com/2006/05/wbp-shot-03_1149309
 (*scrape all source*)
 
 
-scrapeShotPage/@shotNumStrings
+scrapeShotPage/@shotNumStrings;
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*write raw results*)
 
 
@@ -114,6 +114,31 @@ WriteString[fileOut, delimiterStringTemplate[" Rules for Match Play "], rulesFor
 WriteString[fileOut, delimiterStringTemplate[" Background Info "], backgroundInfoText, "\n\n\n"]
 WriteString[fileOut, delimiterStringTemplate[" shot " <> #], scrapeShotPage[#], "\n"]&/@ shotNumStrings;
 Close[fileOut]
+
+
+(* ::Section:: *)
+(*shot reconstruction*)
+
+
+ClearAll[parseShotText]
+parseShotText[shotNum_]:= Module[
+	{
+		strList, categoryPos, setupPos, targetPos, notesPos, res
+	},
+	strList= StringTrim[StringSplit[scrapeShotPage[shotNum], {"<br />", "<br />", "<b>", "</b>"}]//.""->Nothing[]];
+	categoryPos= ResourceFunction["PositionedCases"][strList, "CATAGORY"] /. {} -> ({Missing["NotFound"]} -> "CATAGORY");
+	setupPos= ResourceFunction["PositionedCases"][strList, "INITIAL POSITION"] /. {} -> ({Missing["NotFound"]} -> "INITIAL POSITION");
+	targetPos= ResourceFunction["PositionedCases"][strList, _String?(StringMatchQ[#, "Target Gather Zone: "~~__]&)] /. {{} -> ({Missing["NotFound"]} -> "TARGET ZONE"), _String -> "TARGET ZONE"};
+	notesPos= ResourceFunction["PositionedCases"][strList, "NOTES"] /. {} -> ({Missing["NotFound"]} -> "NOTES");
+	res= Normal[KeyMap[First, Merge[{categoryPos, setupPos, targetPos, notesPos}, First]]];
+	res= Reverse /@ res
+]
+
+
+parseShotText["01"]
+
+
+Select[shotNumStrings, Length[DeleteMissing[parseShotText[#]]]=!=4&]
 
 
 (* ::Section:: *)
