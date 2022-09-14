@@ -293,7 +293,7 @@ poolTableGraphics= {railGraphic, bedGraphic, holeGraphic, cushionGraphic, corner
 Show[poolTableGraphics]
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*billiard table graphics*)
 
 
@@ -424,7 +424,7 @@ diamondGraphics=Graphics[{$diamondStyle,
 	}];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*show table*)
 
 
@@ -432,7 +432,7 @@ billiardTableGraphics= {railGraphic, bedGraphic, cushionGraphic,diamondGraphics}
 Show[billiardTableGraphics]
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*ball graphics*)
 
 
@@ -469,11 +469,11 @@ ballGraphics3D/@Range[0,8]
 
 
 (* ::Section:: *)
-(*moving balls with Locators*)
+(*Locator panes*)
 
 
 (* at tableGraphics ImageSize of 400, one diamond is ImageSize -> 42 across *)
 (* therefore ball ImageSize should be 42/($tableSize/(8 $ballDiameter)) = 7.56` for 100inch table and standard balls *)
 
 
-LocatorPane[{4,2}, Show[billiardTableGraphics, ImageSize->400], Appearance -> Rasterize[ballGraphics[[1]], Background->None,ImageSize-> 8]]
+LocatorPane[{{2,2},{2,2 + Quantity[6, "Inches"]/$inchesPerDiamond},{6,2}}, Show[billiardTableGraphics, ImageSize->400], Appearance -> {Rasterize[ballGraphicsFlat[0], Background->None,ImageSize-> 8],Rasterize[ballGraphicsFlat[1], Background->None,ImageSize-> 8],Rasterize[ballGraphicsFlat[3], Background->None,ImageSize-> 8]}]
