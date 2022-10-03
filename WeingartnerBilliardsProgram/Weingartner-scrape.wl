@@ -147,11 +147,15 @@ Close[rawOutputFilename];
 (*shot reconstruction*)
 
 
+(* ::Subsection::Closed:: *)
+(*parseShotText*)
+
+
 ClearAll[parseShotText]
 parseShotText::usage= "Use parseShotText[\"01\"] or parseShotText[1] depending on which definition above was evaluated.";  
-parseShotText[shotNum_]:= Module[
+parseShotText[shotNum_]:= parseShotText[shotNum]= Module[
 	{
-		strList, categoryPos, setupPos, targetPos, notesPos, res
+		strList, categoryPos, setupPos, targetPos, notesPos, res, targetMissingQ
 	},
 	strList= StringTrim[StringSplit[scrapeShotPage[shotNum], {"<br />", "<br />", "<b>", "</b>"}]//.""->Nothing[]];
 	categoryPos= ResourceFunction["PositionedCases"][strList, "CATAGORY"] /. {} -> ({Missing["NotFound"]} -> "CATAGORY");
@@ -159,14 +163,56 @@ parseShotText[shotNum_]:= Module[
 	targetPos= ResourceFunction["PositionedCases"][strList, _String?(StringMatchQ[#, "Target Gather Zone: "~~__]&)] /. {{} -> ({Missing["NotFound"]} -> "TARGET ZONE"), _String -> "TARGET ZONE"};
 	notesPos= ResourceFunction["PositionedCases"][strList, "NOTES"] /. {} -> ({Missing["NotFound"]} -> "NOTES");
 	res= Normal[KeyMap[First, Merge[{categoryPos, setupPos, targetPos, notesPos}, First]]];
-	res= Reverse /@ res
+	res= Association@@Reverse /@ res;
+	targetMissingQ= !TrueQ[Length[DeleteMissing[res]]===4]; (* the following shots are missing target zones: {4,5,6,7,10,11,12}*)
+	If[
+		targetMissingQ,
+		<|
+			"Category" -> Take[strList, {res[["CATAGORY"]]+1, res[["INITIAL POSITION"]]-1}],
+			"InitialPosition" -> Take[strList, {res[["INITIAL POSITION"]]+1, res[["NOTES"]]-1}],
+			"Notes" -> Take[strList, {res[["NOTES"]]+1, Length[strList]}]
+		|>,
+		<|
+			"Category" -> Take[strList, {res[["CATAGORY"]]+1, res[["INITIAL POSITION"]]-1}],
+			"InitialPosition" -> Take[strList, {res[["INITIAL POSITION"]]+1, res[["TARGET ZONE"]]-1}],
+			"TargetZone" -> Take[strList, {res[["TARGET ZONE"]], res[["NOTES"]]-1}],
+			"Notes" -> Take[strList, {res[["NOTES"]]+1, Length[strList]}]
+		|>
+	]
 ]
 
 
 parseShotText[1]
 
 
-Select[Range[76], Length[DeleteMissing[parseShotText[#]]]=!=4&]
+parseShotText[4]
+
+
+(* ::Subsection::Closed:: *)
+(*parse statistics*)
+
+
+categories= AssociationMap["Category" /. parseShotText[#]&, Range[76]];
+initPositions= AssociationMap["InitialPosition" /. parseShotText[#]&, Range[76]];
+targetZones= AssociationMap["TargetZone" /. parseShotText[#] /. "TargetZone"->{}&, Range[76]];
+notes= AssociationMap["Notes" /. parseShotText[#]&, Range[76]];
+
+
+Tally[Length /@ categories]
+
+
+Tally[Length /@ initPositions]
+Select[Range[76], Length[parseShotText[#][["InitialPosition"]]]==4&]
+initPositions[60]
+
+
+Tally[Length /@ targetZones]
+Select[Range[76], Length[parseShotText[#][["TargetZone"]]]==0&]
+Select[Range[76], Length[parseShotText[#][["TargetZone"]]]==3&]
+targetZones[73]
+
+
+Tally[Length /@ notes]
 
 
 (* ::Section:: *)
