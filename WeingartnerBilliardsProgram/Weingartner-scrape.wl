@@ -1,7 +1,18 @@
 (* ::Package:: *)
 
+(* ::Section:: *)
+(*settings*)
+
+
 (* ::Subsection::Closed:: *)
-(*page URLs*)
+(*output filenames*)
+
+
+rawOutputFilename= FileNameJoin[{NotebookDirectory[], "Weingartner-raw-scrape.txt"}];
+
+
+(* ::Subsection::Closed:: *)
+(*input page URLs*)
 
 
 mainPageURL= "https://wbpb.blogspot.com/";
@@ -10,7 +21,7 @@ backgroundInfoURL= "http://wbpb.blogspot.com/2006/06/background-info.html";
 shotURLTemplate= StringTemplate["http://wbpb.blogspot.com/2006/05/wbp-shot-`1`.html"];
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*scrape top-level text*)
 
 
@@ -53,7 +64,7 @@ backgroundInfoText= StringSplit[backgroundInfoSource, {
 }][[2]]
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*scrape shots*)
 
 
@@ -102,13 +113,10 @@ scrapeShotPage/@shotNumStrings;
 (*write raw results*)
 
 
-outputFilename= FileNameJoin[{NotebookDirectory[], "Weingartner-raw-scrape.txt"}];
-
-
 delimiterStringTemplate = StringTemplate["(*******************`1`*****************************************************************)\n"];
 
 
-fileOut= OpenWrite[outputFilename];
+fileOut= OpenWrite[rawOutputFilename];
 WriteString[fileOut, delimiterStringTemplate[" Program Instructions "], programInstructionText, "\n"]
 WriteString[fileOut, delimiterStringTemplate[" Rules for Match Play "], rulesForMatchPlayText, "\n"]
 WriteString[fileOut, delimiterStringTemplate[" Background Info "], backgroundInfoText, "\n\n\n"]
@@ -116,11 +124,31 @@ WriteString[fileOut, delimiterStringTemplate[" shot " <> #], scrapeShotPage[#], 
 Close[fileOut]
 
 
+(* ::Section::Closed:: *)
+(*read raw results from file*)
+
+
+ReadLine[rawOutputFilename];
+programInstructionText=ReadLine[rawOutputFilename];
+ReadLine[rawOutputFilename];
+rulesForMatchPlayText=ReadLine[rawOutputFilename];
+ReadLine[rawOutputFilename];
+backgroundInfoText=ReadLine[rawOutputFilename];
+Do[
+	ReadLine[rawOutputFilename];
+	scrapeShotPage[n]=ReadLine[rawOutputFilename]
+	,
+	{n, 76}
+]
+Close[rawOutputFilename];
+
+
 (* ::Section:: *)
 (*shot reconstruction*)
 
 
 ClearAll[parseShotText]
+parseShotText::usage= "Use parseShotText[\"01\"] or parseShotText[1] depending on which definition above was evaluated.";  
 parseShotText[shotNum_]:= Module[
 	{
 		strList, categoryPos, setupPos, targetPos, notesPos, res
@@ -135,10 +163,10 @@ parseShotText[shotNum_]:= Module[
 ]
 
 
-parseShotText["01"]
+parseShotText[1]
 
 
-Select[shotNumStrings, Length[DeleteMissing[parseShotText[#]]]=!=4&]
+Select[Range[76], Length[DeleteMissing[parseShotText[#]]]=!=4&]
 
 
 (* ::Section:: *)
