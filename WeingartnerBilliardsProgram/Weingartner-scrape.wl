@@ -155,28 +155,28 @@ ClearAll[parseShotText]
 parseShotText::usage= "Use parseShotText[\"01\"] or parseShotText[1] depending on which definition above was evaluated.";  
 parseShotText[shotNum_]:= parseShotText[shotNum]= Module[
 	{
-		strList, categoryPos, setupPos, targetPos, notesPos, res, targetMissingQ
+		strList, categoryPos, setupPos, targetPos, notesPos, posAssoc, targetMissingQ
 	},
 	strList= StringTrim[StringSplit[scrapeShotPage[shotNum], {"<br />", "<br />", "<b>", "</b>"}]//.""->Nothing[]];
 	categoryPos= ResourceFunction["PositionedCases"][strList, "CATAGORY"] /. {} -> ({Missing["NotFound"]} -> "CATAGORY");
 	setupPos= ResourceFunction["PositionedCases"][strList, "INITIAL POSITION"] /. {} -> ({Missing["NotFound"]} -> "INITIAL POSITION");
 	targetPos= ResourceFunction["PositionedCases"][strList, _String?(StringMatchQ[#, "Target Gather Zone: "~~__]&)] /. {{} -> ({Missing["NotFound"]} -> "TARGET ZONE"), _String -> "TARGET ZONE"};
 	notesPos= ResourceFunction["PositionedCases"][strList, "NOTES"] /. {} -> ({Missing["NotFound"]} -> "NOTES");
-	res= Normal[KeyMap[First, Merge[{categoryPos, setupPos, targetPos, notesPos}, First]]];
-	res= Association@@Reverse /@ res;
-	targetMissingQ= !TrueQ[Length[DeleteMissing[res]]===4]; (* the following shots are missing target zones: {4,5,6,7,10,11,12}*)
+	posAssoc= Normal[KeyMap[First, Merge[{categoryPos, setupPos, targetPos, notesPos}, First]]];
+	posAssoc= Association@@Reverse /@ posAssoc;
+	targetMissingQ= !TrueQ[Length[DeleteMissing[posAssoc]]===4]; (* the following shots are missing target zones: {4,5,6,7,10,11,12}*)
 	If[
 		targetMissingQ,
 		<|
-			"Category" -> Take[strList, {res[["CATAGORY"]]+1, res[["INITIAL POSITION"]]-1}],
-			"InitialPosition" -> Take[strList, {res[["INITIAL POSITION"]]+1, res[["NOTES"]]-1}],
-			"Notes" -> Take[strList, {res[["NOTES"]]+1, Length[strList]}]
+			"Category" -> Take[strList, {posAssoc[["CATAGORY"]]+1, posAssoc[["INITIAL POSITION"]]-1}],
+			"InitialPosition" -> Take[strList, {posAssoc[["INITIAL POSITION"]]+1, posAssoc[["NOTES"]]-1}],
+			"Notes" -> Take[strList, {posAssoc[["NOTES"]]+1, Length[strList]}]
 		|>,
 		<|
-			"Category" -> Take[strList, {res[["CATAGORY"]]+1, res[["INITIAL POSITION"]]-1}],
-			"InitialPosition" -> Take[strList, {res[["INITIAL POSITION"]]+1, res[["TARGET ZONE"]]-1}],
-			"TargetZone" -> Take[strList, {res[["TARGET ZONE"]], res[["NOTES"]]-1}],
-			"Notes" -> Take[strList, {res[["NOTES"]]+1, Length[strList]}]
+			"Category" -> Take[strList, {posAssoc[["CATAGORY"]]+1, posAssoc[["INITIAL POSITION"]]-1}],
+			"InitialPosition" -> Take[strList, {posAssoc[["INITIAL POSITION"]]+1, posAssoc[["TARGET ZONE"]]-1}],
+			"TargetZone" -> Take[strList, {posAssoc[["TARGET ZONE"]], posAssoc[["NOTES"]]-1}],
+			"Notes" -> Take[strList, {posAssoc[["NOTES"]]+1, Length[strList]}]
 		|>
 	]
 ]
@@ -213,6 +213,69 @@ targetZones[73]
 
 
 Tally[Length /@ notes]
+
+
+(* ::Subsection:: *)
+(*parseInitialPositions*)
+
+
+ClearAll[parseInitialConditions]
+parseInitialConditions::usage= "Use parseInitialConditions[\"01\"] or parseInitialConditions[1] depending on which definition above was evaluated.";  
+parseInitialConditions[shotNum_]:= parseInitialConditions[shotNum]= Module[
+	{
+		res, posAssoc
+	},
+	res= parseShotText[shotNum]["InitialPosition"]
+]
+
+
+parseInitialConditions[1]
+
+
+ballPositionGR = CloudDeploy[
+  GrammarRules[
+   {
+     "ball position" -> FixedOrder[
+         c : GrammarToken["BallColor"], "Ball:",
+         d1 : GrammarToken["SemanticNumber"], bd1: "ball"|"diamond", "from the", r1: "bottom"|"top"|"left"|"right", "rail,",
+         d2 : GrammarToken["SemanticNumber"], bd2: "ball"|"diamond", "from the", r2: "bottom"|"top"|"left"|"right", "rail"]
+         :>
+         {c, {d1, bd1, r1}, {d2, bd2, r2}}
+   },
+   {
+      "BallColor" -> "White" :> 0,
+      "BallColor" -> "Yellow" :> 2,
+      "BallColor" -> "Red" :> 3 
+   }
+ ]
+]
+
+
+stringIn=First[initPositions[1]];
+stringIn//InputForm
+
+
+GrammarApply[ballPositionGR, stringIn]
+
+
+Interpreter[ballPositionGR][stringIn]
+
+
+grammar = CloudDeploy[GrammarRules[
+   {
+     FixedOrder[ 
+          c: GrammarToken["BallColor"], "Ball:", n: GrammarToken["SemanticNumber"], bd: "ball"|"diamond"
+     ]:> {c, n, bd}
+   },
+   {
+     "BallColor" -> "White" :> 0,
+     "BallColor" -> "Yellow" :> 2,
+     "BallColor" -> "Red" :> 3 
+   }
+]]
+
+
+GrammarApply[grammar, "White Ball: 3 diamond"]
 
 
 (* ::Section:: *)
