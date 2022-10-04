@@ -147,7 +147,7 @@ Close[rawOutputFilename];
 (*shot reconstruction*)
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*parseShotText*)
 
 
@@ -188,7 +188,7 @@ parseShotText[1]
 parseShotText[4]
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*parse statistics*)
 
 
@@ -237,7 +237,7 @@ ballPositionGR = CloudDeploy[
    {
      "ball position" -> FixedOrder[
          c : GrammarToken["BallColor"], "Ball:",
-         d1 : GrammarToken["SemanticNumber"], bd1: "ball"|"diamond", "from the", r1: "bottom"|"top"|"left"|"right", "rail,",
+         d1 : GrammarToken["SemanticNumber"], bd1: "ball"|"diamond", "from the", r1: "bottom"|"top"|"left"|"right", "rail",
          d2 : GrammarToken["SemanticNumber"], bd2: "ball"|"diamond", "from the", r2: "bottom"|"top"|"left"|"right", "rail"]
          :>
          {c, {d1, bd1, r1}, {d2, bd2, r2}}
@@ -261,11 +261,18 @@ GrammarApply[ballPositionGR, stringIn]
 Interpreter[ballPositionGR][stringIn]
 
 
+  c : GrammarToken["BallColor"], "Ball:",
+         d1 : GrammarToken["SemanticNumber"], bd1: "ball"|"diamond", "from the", r1: "bottom"|"top"|"left"|"right", "rail",
+         d2 : GrammarToken["SemanticNumber"], bd2: "ball"|"diamond", "from the", r2: "bottom"|"top"|"left"|"right", "rail"]
+         :>
+
+
 grammar = CloudDeploy[GrammarRules[
    {
      FixedOrder[ 
-          c: GrammarToken["BallColor"], "Ball:", n: GrammarToken["SemanticNumber"], bd: "ball"|"diamond"
-     ]:> {c, n, bd}
+          c: GrammarToken["BallColor"], "Ball:", n: GrammarToken["SemanticNumber"], bd: "ball"|"diamond",
+          "from", "the", r1: "top"|"bottom"|"left"|"right", "rail,"
+     ]:> {c, n, bd, r1}
    },
    {
      "BallColor" -> "White" :> 0,
@@ -275,7 +282,7 @@ grammar = CloudDeploy[GrammarRules[
 ]]
 
 
-GrammarApply[grammar, "White Ball: 3 diamond"]
+GrammarApply[grammar, "White Ball: 3 diamond from the right rail,"]
 
 
 (* ::Section:: *)
