@@ -189,7 +189,7 @@ parseShotText[4]
 
 
 (* ::Subsection::Closed:: *)
-(*parse statistics*)
+(*parse statistics (categories, initPositions, targetZones, notes)*)
 
 
 categories= AssociationMap["Category" /. parseShotText[#]&, Range[76]];
@@ -215,7 +215,7 @@ targetZones[73]
 Tally[Length /@ notes]
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*parseInitialPositions*)
 
 
@@ -232,13 +232,17 @@ parseInitialConditions[shotNum_]:= parseInitialConditions[shotNum]= Module[
 parseInitialConditions[1]
 
 
-ballPositionGR = CloudDeploy[
+(* ::Subsection::Closed:: *)
+(*define ball position grammar (ballPositionGrammar)*)
+
+
+ballPositionGrammar = CloudDeploy[
   GrammarRules[
    {
-     "ball position" -> FixedOrder[
+     FixedOrder[
          c : GrammarToken["BallColor"], "Ball:",
-         d1 : GrammarToken["SemanticNumber"], bd1: "ball"|"diamond", "from the", r1: "bottom"|"top"|"left"|"right", "rail,",
-         d2 : GrammarToken["SemanticNumber"], bd2: "ball"|"diamond", "from the", r2: "bottom"|"top"|"left"|"right", "rail"]
+         d1 : GrammarToken["SemanticNumber"], bd1: "ball"|"diamond", "from", "the", r1: "bottom"|"top"|"left"|"right", "rail,",
+         d2 : GrammarToken["SemanticNumber"], bd2: "ball"|"diamond", "from", "the", r2: "bottom"|"top"|"left"|"right", "rail"]
          :>
          {c, {d1, bd1, r1}, {d2, bd2, r2}}
    },
@@ -251,31 +255,29 @@ ballPositionGR = CloudDeploy[
 ]
 
 
-stringIn=First[initPositions[1]];
-stringIn//InputForm
+(* ::Subsection::Closed:: *)
+(*test ballPositionGrammar*)
 
 
-GrammarApply[ballPositionGR, stringIn]
+stringIn1=initPositions[[1,1]]
+stringIn2=initPositions[[1,2]]
+stringIn3=initPositions[[1,3]]
 
 
-Interpreter[ballPositionGR][stringIn]
+GrammarApply[ballPositionGrammar, stringIn1]
+GrammarApply[ballPositionGrammar, stringIn2]
+GrammarApply[ballPositionGrammar, stringIn3]
 
 
-grammar = CloudDeploy[GrammarRules[
-   {
-     FixedOrder[ 
-          c: GrammarToken["BallColor"], "Ball:", n: GrammarToken["SemanticNumber"], bd: "ball"|"diamond"
-     ]:> {c, n, bd}
-   },
-   {
-     "BallColor" -> "White" :> 0,
-     "BallColor" -> "Yellow" :> 2,
-     "BallColor" -> "Red" :> 3 
-   }
-]]
+(* ::Subsection::Closed:: *)
+(*ballPositionGrammar statistics*)
 
 
-GrammarApply[grammar, "White Ball: 3 diamond"]
+allInitPositionLines= initPositions//Values//Flatten//DeleteDuplicates;
+Length[%]
+
+
+GrammarApply[ballPositionGrammar, #]&/@allInitPositionLines[[1;;5]]
 
 
 (* ::Section:: *)
