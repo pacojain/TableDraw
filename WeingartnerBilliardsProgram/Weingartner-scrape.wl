@@ -147,7 +147,7 @@ Close[rawOutputFilename];
 (*shot reconstruction*)
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*parseShotText*)
 
 
