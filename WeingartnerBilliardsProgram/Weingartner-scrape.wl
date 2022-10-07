@@ -232,7 +232,7 @@ parseInitialConditions[shotNum_]:= parseInitialConditions[shotNum]= Module[
 parseInitialConditions[1]
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*define ball position grammar (ballPositionGrammar)*)
 
 
@@ -244,7 +244,13 @@ ballPositionGrammar = CloudDeploy[
          d1 : GrammarToken["SemanticNumber"], bd1: "ball"|"diamond", "from", "the", r1: "bottom"|"top"|"left"|"right", "rail,",
          d2 : GrammarToken["SemanticNumber"], bd2: "ball"|"diamond", "from", "the", r2: "bottom"|"top"|"left"|"right", "rail"]
          :>
-         {c, {d1, bd1, r1}, {d2, bd2, r2}}
+         {c, {d1, bd1, r1}, {d2, bd2, r2}},
+      FixedOrder[
+         c : GrammarToken["BallColor"], "Ball:",
+         "frozen", "to", "the", r1: "bottom"|"top"|"left"|"right", "rail,",
+         d2 : GrammarToken["SemanticNumber"], bd2: "ball"|"diamond", "from", "the", r2: "bottom"|"top"|"left"|"right", OptionalElement["rail"]]
+         :>
+         {c, {0.5, "ball", r1}, {d2, bd2, r2}}
    },
    {
       "BallColor" -> "White" :> 0,
@@ -269,7 +275,7 @@ GrammarApply[ballPositionGrammar, stringIn2]
 GrammarApply[ballPositionGrammar, stringIn3]
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*ballPositionGrammar statistics*)
 
 
@@ -278,6 +284,12 @@ Length[%]
 
 
 GrammarApply[ballPositionGrammar, #]&/@allInitPositionLines[[1;;5]]
+
+
+# -> GrammarApply[ballPositionGrammar, #]&/@allInitPositionLines[[1;;5]]
+
+
+Interpreter[ballPositionGrammar]["Red Ball: frozen to the top rail, 2 diamond from the right"]
 
 
 (* ::Section:: *)
