@@ -333,6 +333,7 @@ $railColor= RGBColor[0.768627, 0.513725, 0.133333];
 SetDirectory[NotebookDirectory[]];
 $headSpotGraphic= None;
 $diamondStyle= Sequence[PointSize[Medium], RGBColor[0.67451, 0.337255, 0]];
+$diamondStyleAccented= Sequence[PointSize[Small], GrayLevel[0.913725]];
 $graphicsEdgeForm= EdgeForm[{Thin, Black}];
 
 
@@ -402,24 +403,22 @@ cushionGraphic= Graphics[{$graphicsEdgeForm, $cushionColor,
 $diamondOffset= ($cushionWidth + $railWidth/2)/$inchesPerDiamond;
 diamondGraphics=Graphics[{$diamondStyle,
 	(* left rail *)
-	Point[{0, -$diamondOffset}], Point[{1, -$diamondOffset}],
-	Point[{2, -$diamondOffset}], Point[{3, -$diamondOffset}],
-	Point[{4, -$diamondOffset}], Point[{5, -$diamondOffset}],
-	Point[{6, -$diamondOffset}], Point[{7, -$diamondOffset}],
-	Point[{8, -$diamondOffset}],
+	Point[{1, -$diamondOffset}], Point[{2, -$diamondOffset}], Point[{3, -$diamondOffset}],
+	Point[{5, -$diamondOffset}], Point[{6, -$diamondOffset}], Point[{7, -$diamondOffset}],
+	$diamondStyleAccented, Point[{0, -$diamondOffset}], Point[{4, -$diamondOffset}],
+	Point[{8, -$diamondOffset}], $diamondStyle,
 	(* right rail *)
-	Point[{0, 4+$diamondOffset}], Point[{1, 4+$diamondOffset}], 
-	Point[{2, 4+$diamondOffset}], Point[{3, 4+$diamondOffset}], 
-	Point[{4, 4+$diamondOffset}], Point[{5, 4+$diamondOffset}],
-	Point[{6, 4+$diamondOffset}], Point[{7, 4+$diamondOffset}],
-	Point[{8, 4+$diamondOffset}],
+	Point[{1, 4+$diamondOffset}], Point[{5, 4+$diamondOffset}], Point[{6, 4+$diamondOffset}],
+	Point[{7, 4+$diamondOffset}], Point[{2, 4+$diamondOffset}], Point[{3, 4+$diamondOffset}], 
+	$diamondStyleAccented, Point[{0, 4+$diamondOffset}], Point[{4, 4+$diamondOffset}],
+	Point[{8, 4+$diamondOffset}], $diamondStyle,
 	(* head rail *)
-	Point[{-$diamondOffset, 0}], Point[{-$diamondOffset, 1}], 
-	Point[{-$diamondOffset, 2}], Point[{-$diamondOffset, 3}], 
-	Point[{-$diamondOffset, 4}],
+	Point[{-$diamondOffset, 1}], Point[{-$diamondOffset, 3}],
+	$diamondStyleAccented, Point[{-$diamondOffset, 0}], Point[{-$diamondOffset, 2}],
+	Point[{-$diamondOffset, 4}], $diamondStyle,
 	(* foot rail *)
-	Point[{8+$diamondOffset, 0}], Point[{8+$diamondOffset, 1}], 
-	Point[{8+$diamondOffset, 2}], Point[{8+$diamondOffset, 3}],
+	Point[{8+$diamondOffset, 1}], Point[{8+$diamondOffset, 3}],
+	$diamondStyleAccented, Point[{8+$diamondOffset, 0}], Point[{8+$diamondOffset, 2}],
 	Point[{8+$diamondOffset, 4}]
 	}];
 
